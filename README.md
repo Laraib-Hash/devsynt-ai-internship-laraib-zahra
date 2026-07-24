@@ -1,2 +1,5 @@
-# devsynt-ai-internship-laraib-zahra
-DevSynt AI Automation Internship – Summer 2026 | Weekly tasks, n8n workflows, projects, documentation, and progress updates.
+# DevSynt AI Automation Internship – Summer 2026
+
+**Name:** Laraib Zahra
+
+This repository contains my weekly task progress, projects, notes, screenshots, workflow files, and documentation completed during the DevSynt AI Automation Internship – Summer 2026.
