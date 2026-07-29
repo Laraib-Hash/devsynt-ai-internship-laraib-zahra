@@ -1,0 +1,55 @@
+flowchart TD
+
+    A([User sends a message]) --> B{State 0:<br/>Detect Language}
+
+    B -->|English| C[State 1:<br/>Greeting & Intent]
+    B -->|Arabic| C
+
+    C --> D{User Intent}
+
+    D -->|Book Appointment| E[State 2:<br/>Choose Service]
+
+    D -->|Ask Question| F[Answer FAQ]
+
+    F --> C
+
+    E --> G[State 3:<br/>Ask Preferred Date]
+
+    G --> H[State 4:<br/>Offer Available Time Slots]
+
+    H --> I{User Selects Slot}
+
+    I -->|Yes| J[State 5:<br/>Confirm Booking]
+
+    J --> K([Booking Completed])
+
+    %% Human Handoff
+    C --> L{Medical Advice?<br/>Complaint?<br/>Price Negotiation?<br/>Unknown Request?}
+
+    E --> L
+    G --> L
+    H --> L
+
+    L --> M[Transfer to Human Agent]
+
+    %% Language Switching
+    C -. User switches language .-> B
+    E -. User switches language .-> B
+    G -. User switches language .-> B
+    H -. User switches language .-> B
+    J -. User switches language .-> B
+
+    %% No Reply Flow
+    J --> N{No Reply}
+
+    N --> O[+1 Hour Reminder]
+
+    O --> P{Still No Reply?}
+
+    P --> Q[+24 Hour Template Reminder]
+
+    Q --> R{Still No Reply?}
+
+    R --> S[+72 Hour Template Reminder]
+
+    S --> T([Lead Marked Lost])

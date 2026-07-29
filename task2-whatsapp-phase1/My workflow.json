@@ -1,0 +1,41 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Whatsapp",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6c2d3e2c-4b76-4a35-80f3-00da3bc4775c",
+      "name": "Webhook",
+      "webhookId": "4fb566c7-9f7e-4bca-9513-74740da4c2ff"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3fd3e42d-cb2a-4e77-9893-ef9afbd79dfa",
+  "meta": {
+    "instanceId": "1e246c4bb0544f8c8accb6294b4bda6ec013a6ed449c05e4f9c7a8c58dc047d5"
+  },
+  "id": "IDzwWGSqRKzfpT9i",
+  "tags": []
+}
