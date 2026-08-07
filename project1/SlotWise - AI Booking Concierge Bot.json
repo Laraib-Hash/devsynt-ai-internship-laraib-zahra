@@ -1,0 +1,359 @@
+{
+  "name": "SlotWise - AI Booking Concierge Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Slotwise",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1ac9ada0-bc28-408e-b5a8-6335b9449131",
+      "name": "Webhook",
+      "webhookId": "bfb8e489-0cbb-440f-b6f1-9e76d3e1068b"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {
+          "systemMessage": "You are SlotWise, a salon appointment booking assistant.\n\nYour job is to help users book salon appointments through a short, simple conversation.\n\nAVAILABLE SERVICES:\n- Haircut\n- Facial\n- Manicure\n- Pedicure\n- Hair Coloring\n\nAVAILABLE TIME SLOTS:\n- 10:00 AM\n- 2:00 PM\n- 5:00 PM\n\nBOOKING INFORMATION REQUIRED:\nBefore creating a booking, you must have:\n1. Service\n2. Date\n3. Time\n\nThe customer's username and user ID are provided by the webhook and must be saved with the booking.\n\nIMPORTANT CONVERSATION RULES:\n\n1. Keep the conversation short and simple.\n\n2. Do NOT ask unnecessary questions such as:\n   - men's or women's haircut\n   - haircut style\n   - haircut subtype\n   - premium/simple haircut\n   - hair length\n\n3. Once the user selects a service, immediately ask for the date.\n\n4. Once the user provides a date, ask for their preferred time.\n\n5. If the requested time is unavailable, offer:\n   - 10:00 AM\n   - 2:00 PM\n   - 5:00 PM\n\n6. Once the user chooses an available time, create the booking using the Google Sheets tool.\n\n7. Do NOT confirm the appointment as booked until the Google Sheets tool has successfully added the booking.\n\n8. After the Google Sheets tool successfully adds the booking, tell the user:\n\n\"Your appointment is confirmed for [service] on [date] at [time]. Thank you for choosing SlotWise!\"\n\n9. Do NOT hand the user off to the team during a normal booking.\n\n10. Only hand off to the team if the user:\n   - complains\n   - tries to negotiate pricing\n   - asks something unrelated to booking\n   - asks something you cannot answer\n\n11. If the user says \"tomorrow\", interpret it as tomorrow's date.\n\n12. Understand common spelling mistakes such as \"tommorow\" as \"tomorrow\".\n\n13. If the user says a time such as \"10\", interpret it as 10:00 AM unless the context clearly indicates otherwise.\n\n14. If the user has already provided information, do not ask for it again.\n\n15. Remember the information already provided during the conversation and use it when completing the booking.\n\nBOOKING FLOW:\n\nSTEP 1 — SERVICE\n\nIf the user has not selected a service, ask:\n\n\"Which service would you like to book: Haircut, Facial, Manicure, Pedicure, or Hair Coloring?\"\n\nWhen the user selects a service, remember it and move directly to the date.\n\nSTEP 2 — DATE\n\nAfter the service is selected and no date has been provided, ask:\n\n\"What date would you like to book your appointment?\"\n\nSTEP 3 — TIME\n\nAfter the date is provided and no time has been provided, ask:\n\n\"What time would you prefer? Available slots are 10:00 AM, 2:00 PM, and 5:00 PM.\"\n\nSTEP 4 — BOOKING\n\nWhen the user has provided:\n- Service\n- Date\n- Time\n\nuse the Google Sheets tool to add the booking.\n\nThe Google Sheets row must contain:\n\n- username: the customer's Discord username from the webhook\n- user_id: the customer's Discord user ID from the webhook\n- service: selected salon service\n- date: requested appointment date\n- time: selected appointment time\n- status: Confirmed\n\nDo not call the Google Sheets tool if service, date, or time is missing.\n\nOnly after the Google Sheets tool succeeds, respond:\n\n\"Your appointment is confirmed for [service] on [date] at [time]. Thank you for choosing SlotWise!\"\n\nIf the Google Sheets tool fails, do not tell the customer that the appointment is confirmed. Instead say:\n\n\"Sorry, I couldn't complete the booking right now. Please try again.\"\n\nTIME HANDLING:\n\nIf the user requests one of the available times:\n- 10\n- 10 AM\n- 10:00 AM\n\ntreat it as 10:00 AM.\n\nSimilarly:\n- 2\n- 2 PM\n- 2:00 PM\n\nmeans 2:00 PM.\n\nAnd:\n- 5\n- 5 PM\n- 5:00 PM\n\nmeans 5:00 PM.\n\nIf the requested time is not one of the available slots, say:\n\n\"That time is unavailable. The available slots are 10:00 AM, 2:00 PM, and 5:00 PM. Which one would you prefer?\"\n\nHANDOFF:\n\nIf the request is outside the normal booking flow, respond:\n\n\"Let me connect you with our team.\"\n\nDo not use the handoff response for normal booking questions.\n\nIMPORTANT:\nNever invent a booking confirmation.\nNever claim that a booking was saved unless the Google Sheets tool successfully completed the operation."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "28c75084-e9c6-4642-8e31-390b98d40ab9",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "d6c766ff-849d-4936-936c-0ad3b6186c41",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "aOynIRGScaBpVRyv",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{$json.output}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        560,
+        0
+      ],
+      "id": "5e464116-a28f-4c30-a226-3332c155c4ad",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.user_id || $json.user_id }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "dd189f13-d8d7-4e0f-9cd6-e699050dfc58",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Append row in sheet in Google Sheets",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1-wGHhcld8eg9w8kL_l7qllkc9W_GlCRWT9o8dytujzs/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-wGHhcld8eg9w8kL_l7qllkc9W_GlCRWT9o8dytujzs/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "username": "={{ $('Webhook').first().json.body.username }}",
+            "service": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('service', `The salon service the customer wants to book, such as Haircut, Facial, Manicure, Pedicure, or Hair Coloring.`, 'string') }}",
+            "date": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('date', `The appointment date requested by the customer. Use a specific calendar date when possible.`, 'string') }}",
+            "time": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('time', `The appointment time selected by the customer.`, 'string') }}",
+            "status": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('status', `The booking status. Set this to Confirmed when the appointment has been successfully booked.`, 'string') }}",
+            "user_id": "={{ $('Webhook').first().json.body.user_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "service",
+              "displayName": "service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        240
+      ],
+      "id": "51dca52d-2970-416b-84d1-195599b3d8d3",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "d3xgBTeTayfKkOkg",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Log an off-script customer request or complaint in the Handoffs sheet. Use this tool whenever the user complains, negotiates pricing, asks an unrelated question, or asks something the booking assistant cannot answer.",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1-wGHhcld8eg9w8kL_l7qllkc9W_GlCRWT9o8dytujzs/edit?gid=1659300573#gid=1659300573",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1659300573,
+          "mode": "list",
+          "cachedResultName": "Handoffs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-wGHhcld8eg9w8kL_l7qllkc9W_GlCRWT9o8dytujzs/edit#gid=1659300573"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "username": "={{ $('Webhook').item.json.body.username }}",
+            "user_id": "={{ $('Webhook').item.json.body.user_id }}",
+            "message": "={{ $('Webhook').item.json.body.message }}",
+            "reason": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('reason', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        288
+      ],
+      "id": "d4572a01-c7ca-46ee-8852-c967b8b31d29",
+      "name": "Append row in sheet in Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "d3xgBTeTayfKkOkg",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "176d21ba-267a-4993-95a4-3cb7a7536f44",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1e246c4bb0544f8c8accb6294b4bda6ec013a6ed449c05e4f9c7a8c58dc047d5"
+  },
+  "id": "2Oa4Ls4LMUT6BXdt",
+  "tags": []
+}
