@@ -1,49 +1,69 @@
-# Task 2 – WhatsApp Automation (Phase 1)
+# SlotWise — AI Booking Concierge Bot
 
-## Niche
+SlotWise is an AI-powered salon appointment booking assistant built as part of the **AI Automation Engineering Internship — Project 1**.
 
-Dental Clinic Appointment Booking
+The bot allows users to book salon appointments through a natural conversational flow using **Discord, n8n, an LLM, and Google Sheets**.
 
-## Objective
+## 🚀 Features
 
-The goal of this task was to design a bilingual WhatsApp chatbot and connect Meta WhatsApp Cloud API with n8n using a production webhook.
+- 🤖 AI-powered conversational booking
+- 💬 Discord chatbot integration
+- 🧠 AI Agent with conversation memory
+- 💇 Salon service selection
+- 📅 Date and time selection
+- 🕐 Available appointment slots
+- ✅ Booking confirmation
+- 📊 Automatic Google Sheets booking logging
+- 👤 Stores Discord username and user ID
+- 🔄 Basic handoff for complaints and unsupported requests
+- 📝 Separate logging of handoff requests
 
-## Completed Work
+## 🛠️ Technologies Used
 
-- Designed the complete conversation flow.
-- Created bilingual (English & Arabic) bot message scripts.
-- Configured Meta WhatsApp Cloud API Sandbox.
-- Connected Meta Webhook to n8n using a static ngrok domain.
-- Successfully received live WhatsApp messages inside n8n.
+- **n8n** — Workflow automation
+- **Discord** — User interface / chatbot platform
+- **Groq LLM** — AI conversational processing
+- **Google Sheets** — Booking and handoff logging
+- **Python** — Discord bot integration
+- **ngrok** — Webhook connectivity
 
-## Human Handoff
+## 💇 Available Services
 
-Medical questions, complaints, pricing negotiations, and other off-script conversations are transferred to a human representative instead of allowing the chatbot to guess or provide inaccurate information. This ensures customer safety and a better user experience.
+The bot currently supports:
 
-## Bilingual Behaviour
+- Haircut
+- Facial
+- Manicure
+- Pedicure
+- Hair Coloring
 
-The chatbot detects whether the customer is writing in English or Arabic and responds in the same language. If the customer switches languages during the conversation, the chatbot automatically continues in the new language.
+## 🕐 Available Time Slots
 
-## Repository Structure
+The mock booking system provides:
+
+- 10:00 AM
+- 2:00 PM
+- 5:00 PM
+
+## 💬 Booking Flow
+
+The conversation follows a short booking flow:
 
 ```text
-task2-whatsapp-phase1/
-│
-├── workflow.json
-├── messages.md
-│
-└── assets/
-    ├── flow-diagram.png
-    ├── flow-diagram.mmd
-    └── webhook-test-screenshot.png
-```
-
-## Security Note
-
-This repository does **not** contain the Meta Access Token or Verify Token.
-
-To run this workflow:
-
-1. Create your own Meta Developer App.
-2. Configure WhatsApp Cloud API.
-3. Add your own credentials inside n8n.
+User
+  ↓
+Discord
+  ↓
+n8n Webhook
+  ↓
+AI Agent
+  ↓
+Service Selection
+  ↓
+Date Selection
+  ↓
+Time Selection
+  ↓
+Booking Confirmation
+  ↓
+Google Sheets
